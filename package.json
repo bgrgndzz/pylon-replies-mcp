@@ -1,0 +1,21 @@
+{
+  "name": "pylon-replies-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for sending customer-facing replies on Pylon issues",
+  "main": "index.js",
+  "bin": {
+    "pylon-replies-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["mcp", "pylon", "replies", "support"],
+  "author": "bgrgndzz",
+  "license": "MIT",
+  "files": ["index.js", "package.json"],
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "zod": "^4.3.6"
+  }
+}
