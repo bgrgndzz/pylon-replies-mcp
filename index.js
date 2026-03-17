@@ -160,44 +160,6 @@ server.tool(
   }
 );
 
-// Delete a message
-server.tool(
-  "delete_message",
-  "Permanently delete a message from an issue and its connected external system. Cannot be undone.",
-  {
-    issue: z.string().describe("Issue ID (UUID) or issue number"),
-    message_id: z.string().describe("ID of the message to delete"),
-  },
-  async ({ issue, message_id }) => {
-    const data = await pylonRequest(
-      "DELETE",
-      `/issues/${issue}/messages/${message_id}`
-    );
-    return {
-      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
-    };
-  }
-);
-
-// Redact a message
-server.tool(
-  "redact_message",
-  "Permanently redact a message's content. Cannot be undone.",
-  {
-    issue: z.string().describe("Issue ID (UUID) or issue number"),
-    message_id: z.string().describe("ID of the message to redact"),
-  },
-  async ({ issue, message_id }) => {
-    const data = await pylonRequest(
-      "POST",
-      `/issues/${issue}/messages/${message_id}/redact`
-    );
-    return {
-      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
-    };
-  }
-);
-
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
