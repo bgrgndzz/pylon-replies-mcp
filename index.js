@@ -130,12 +130,13 @@ server.tool(
 // Reply to an issue (the core tool — customer-facing)
 server.tool(
   "reply_to_issue",
-  "Send a customer-facing reply on a Pylon issue. This is VISIBLE to the customer. Requires a message_id (get from get_issue_messages).",
+  "Send a customer-facing reply on a Pylon issue. This is VISIBLE to the customer. Use get_issue_messages to find a message_id, or provide email_info for email-based tickets.",
   {
     issue: z.string().describe("Issue ID (UUID) or issue number"),
     body_html: z.string().describe("HTML content of the reply"),
     message_id: z
       .string()
+      .optional()
       .describe(
         "ID of the message to reply to (get from get_issue_messages)"
       ),
@@ -147,11 +148,39 @@ server.tool(
       .array(z.string())
       .optional()
       .describe("URLs of attachments to include in the reply"),
+    email_info: z
+      .object({
+        to_emails: z
+          .array(z.string())
+          .optional()
+          .describe("Primary recipient email addresses"),
+        cc_emails: z
+          .array(z.string())
+          .optional()
+          .describe("CC recipient email addresses"),
+        bcc_emails: z
+          .array(z.string())
+          .optional()
+          .describe("BCC recipient email addresses"),
+      })
+      .optional()
+      .describe(
+        "Email routing details. Use when the ticket lacks a default recipient or to override recipients."
+      ),
   },
-  async ({ issue, body_html, message_id, user_id, attachment_urls }) => {
-    const body = { body_html, message_id };
+  async ({
+    issue,
+    body_html,
+    message_id,
+    user_id,
+    attachment_urls,
+    email_info,
+  }) => {
+    const body = { body_html };
+    if (message_id) body.message_id = message_id;
     if (user_id) body.user_id = user_id;
     if (attachment_urls) body.attachment_urls = attachment_urls;
+    if (email_info) body.email_info = email_info;
 
     const data = await pylonRequest("POST", `/issues/${issue}/reply`, body);
     return {
